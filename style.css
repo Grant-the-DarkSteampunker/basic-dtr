@@ -126,3 +126,106 @@ th {
 tr:nth-child(even) {
     background-color: #f2f2f2;
 }
+
+
+/*printable*/
+
+/* --- Styles for printable_dtr.php --- */
+
+.report-container {
+    width: 90%;
+    max-width: 800px;
+    background-color: #fff;
+    padding: 30px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dtr-form {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.dtr-form .form-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.dtr-form .form-group {
+    flex: 1;
+    text-align: left;
+}
+
+.dtr-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.dtr-form input[type="text"],
+.dtr-form input[type="date"] {
+    width: 100%;
+    box-sizing: border-box; /* Important for padding */
+}
+
+/* Report Header Styles */
+.report-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.report-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.report-header p {
+    margin: 5px 0 0;
+    color: #555;
+}
+
+/* --- Special CSS for PRINTING --- */
+@media print {
+    /* Hide everything in the body by default */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Then, make the printable area and its children visible */
+    #printable-area, #printable-area * {
+        visibility: visible;
+    }
+    
+    /* Position the printable area to the top-left of the page */
+    #printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    /* Hide elements that should not be printed */
+    .no-print {
+        display: none !important;
+    }
+
+    /* Optional: Remove box-shadows and backgrounds for cleaner printing */
+    .report-container {
+        box-shadow: none;
+        border: none;
+    }
+    
+    table {
+        color: black;
+    }
+
+    th {
+        background-color: #dfdfdf !important; /* Use a light grey for headers */
+        -webkit-print-color-adjust: exact; /* Force browsers to print background colors */
+        color-adjust: exact;
+    }
+}

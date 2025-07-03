@@ -1,3 +1,8 @@
+<?php
+// We need to fetch the employee names to populate the datalist
+include 'db_connection.php';
+$employees_result = $conn->query("SELECT name FROM employees ORDER BY name ASC");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,11 +16,21 @@
     <div class="container">
         <h1>Employee Daily Time Record</h1>
         <h2 id="clock"></h2>
-        <p>Enter your Employee ID to Time In or Time Out</p>
+        <p>Enter your Full Name to Time In or Time Out</p>
 
         <form id="attendance-form">
             <div class="form-group">
-                <input type="text" id="employee_id" name="employee_id" placeholder="e.g., EMP-001" required>
+                <!-- Use an input with a datalist for autocomplete -->
+                <input type="text" id="employee_name" name="employee_name" list="employee-list" placeholder="e.g., John Doe" required>
+                <datalist id="employee-list">
+                    <?php
+                    if ($employees_result->num_rows > 0) {
+                        while($row = $employees_result->fetch_assoc()) {
+                            echo '<option value="' . htmlspecialchars($row['name']) . '">';
+                        }
+                    }
+                    ?>
+                </datalist>
             </div>
             <button type="submit">SUBMIT</button>
         </form>
@@ -26,44 +41,34 @@
     </div>
 
     <script>
-        // Real-time Clock
+        // Real-time Clock in 12-hour format
         function updateClock() {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', options);
         }
         setInterval(updateClock, 1000);
-        updateClock(); // Initial call
+        updateClock();
 
         // AJAX Form Submission
         document.getElementById('attendance-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault();
 
-            const employeeId = document.getElementById('employee_id').value;
+            const employeeName = document.getElementById('employee_name').value;
             const messageDiv = document.getElementById('message');
 
-            // Create a FormData object to send data
             const formData = new FormData();
-            formData.append('employee_id', employeeId);
+            formData.append('employee_name', employeeName);
 
-            // Use Fetch API to send data to the server
             fetch('process_attendance.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json()) // Expect a JSON response
+            .then(response => response.json())
             .then(data => {
-                // Display the server's message
                 messageDiv.textContent = data.message;
-                if (data.status === 'success') {
-                    messageDiv.className = 'message-success';
-                } else {
-                    messageDiv.className = 'message-error';
-                }
-                // Clear the input field
-                document.getElementById('employee_id').value = '';
+                messageDiv.className = data.status === 'success' ? 'message-success' : 'message-error';
+                document.getElementById('employee_name').value = '';
             })
             .catch(error => {
                 console.error('Error:', error);

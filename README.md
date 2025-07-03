@@ -2,16 +2,19 @@
 DTR from TEMU
 
 
--- Table for employees
+-- Drop the old tables if they exist
+DROP TABLE IF EXISTS `attendance`;
+DROP TABLE IF EXISTS `employees`;
+
+-- Create a new 'employees' table using name as the primary key
 CREATE TABLE `employees` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `employee_id` varchar(50) NOT NULL UNIQUE,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL UNIQUE,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table for attendance records
+-- Create a new 'attendance' table
 CREATE TABLE `attendance` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `employee_id` int(11) NOT NULL,
@@ -22,8 +25,6 @@ CREATE TABLE `attendance` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Add some sample employees
-INSERT INTO `employees` (`employee_id`, `name`) VALUES
-('EMP-001', 'John Doe'),
-('EMP-002', 'Jane Smith'),
-('EMP-003', 'Peter Jones');
+-- Insert the new list of names
+INSERT INTO `employees` (`name`) VALUES
+('Sample Dude'),
